@@ -25,6 +25,215 @@ body {
     display: none !important;
 }
 
+/* Cover Screen */
+#cover-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+}
+
+.cover-icon {
+    font-size: 5rem;
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.cover-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.cover-desc {
+    font-size: 1rem;
+    opacity: 0.7;
+    line-height: 1.6;
+    max-width: 280px;
+}
+
+.cover-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 16px 24px;
+}
+
+.cover-rules .rule {
+    font-size: 0.95rem;
+    opacity: 0.8;
+}
+
+#start-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: #fff;
+    font-size: 1.2rem;
+    padding: 16px 50px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+}
+
+#start-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 14px 40px rgba(102, 126, 234, 0.4);
+}
+
+/* Settings Button */
+#settings-btn {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 1rem;
+    padding: 10px 30px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+#settings-btn:hover {
+    border-color: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Settings Screen */
+#settings-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.settings-title {
+    font-size: 1.8rem;
+    text-align: center;
+}
+
+.setting-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.setting-label {
+    font-size: 0.95rem;
+    opacity: 0.7;
+    font-weight: 600;
+}
+
+.toggle-group {
+    display: flex;
+    gap: 8px;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 10px 16px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.toggle-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: transparent;
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: center;
+}
+
+.stepper-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: #fff;
+    font-size: 1.3rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.stepper-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+}
+
+.stepper span {
+    font-size: 1.5rem;
+    font-weight: 700;
+    min-width: 50px;
+    text-align: center;
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.category-btn {
+    padding: 10px 8px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    background: transparent;
+    color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    opacity: 0.5;
+}
+
+.category-btn.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-color: transparent;
+    opacity: 1;
+}
+
+#settings-back-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border: none;
+    color: #fff;
+    font-size: 1.1rem;
+    padding: 14px 40px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-top: 8px;
+    transition: transform 0.2s;
+}
+
+#settings-back-btn:hover {
+    transform: scale(1.05);
+}
+
 /* Game Screen */
 #game-screen {
     display: flex;
@@ -107,11 +316,16 @@ body {
 /* Result Screen */
 #result-screen {
     text-align: center;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
 }
 
 #result-screen h1 {
     font-size: 2rem;
     margin-bottom: 24px;
+    flex-shrink: 0;
 }
 
 #result-list {
@@ -119,6 +333,14 @@ body {
     flex-direction: column;
     gap: 12px;
     margin-bottom: 30px;
+    overflow-y: auto;
+    flex: 1;
+    padding-right: 4px;
+    scrollbar-width: none;
+}
+
+#result-list::-webkit-scrollbar {
+    display: none;
 }
 
 .result-item {

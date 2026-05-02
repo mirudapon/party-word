@@ -8,8 +8,68 @@
 </head>
 <body>
     <div id="app">
-        <div id="game-screen">
-            <div class="progress">第 <span id="current-round">1</span> / 10 題</div>
+        <div id="cover-screen">
+            <div class="cover-icon">🎉</div>
+            <h1 class="cover-title">派對猜詞</h1>
+            <p class="cover-desc">把手機放在額頭上，讓朋友用動作或語言描述詞語！</p>
+            <div class="cover-rules">
+                <div class="rule">← 左滑 = 完成</div>
+                <div class="rule">右滑 = 跳過 →</div>
+                <div class="rule">共 10 題</div>
+            </div>
+            <button id="start-btn">開始遊戲</button>
+            <button id="settings-btn">設定</button>
+        </div>
+
+        <div id="settings-screen" class="hidden">
+            <h2 class="settings-title">遊戲設定</h2>
+
+            <div class="setting-group">
+                <label class="setting-label">結束模式</label>
+                <div class="toggle-group">
+                    <button class="toggle-btn active" data-mode="rounds">題數限制</button>
+                    <button class="toggle-btn" data-mode="time">時間限制</button>
+                </div>
+            </div>
+
+            <div class="setting-group" id="rounds-setting">
+                <label class="setting-label">題數</label>
+                <div class="stepper">
+                    <button class="stepper-btn" id="rounds-minus">-</button>
+                    <span id="rounds-value">10</span>
+                    <button class="stepper-btn" id="rounds-plus">+</button>
+                </div>
+            </div>
+
+            <div class="setting-group hidden" id="time-setting">
+                <label class="setting-label">時間（秒）</label>
+                <div class="stepper">
+                    <button class="stepper-btn" id="time-minus">-</button>
+                    <span id="time-value">60</span>
+                    <button class="stepper-btn" id="time-plus">+</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <label class="setting-label">詞語類別</label>
+                <div class="category-grid">
+                    <button class="category-btn active" data-category="action">動作</button>
+                    <button class="category-btn active" data-category="animal">動物</button>
+                    <button class="category-btn active" data-category="food">食物</button>
+                    <button class="category-btn active" data-category="object">物品</button>
+                    <button class="category-btn active" data-category="place">地點</button>
+                    <button class="category-btn active" data-category="person">人物</button>
+                </div>
+            </div>
+
+            <button id="settings-back-btn">確認</button>
+        </div>
+
+        <div id="game-screen" class="hidden">
+            <div class="progress">
+                <span id="progress-text">第 <span id="current-round">1</span> / <span id="total-display">10</span> 題</span>
+                <span id="timer-display" class="hidden"></span>
+            </div>
             <div id="card-container">
                 <div id="card">
                     <div class="card-content">

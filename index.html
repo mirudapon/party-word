@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>派對猜詞遊戲</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <div id="game-screen">
+            <div class="progress">第 <span id="current-round">1</span> / 10 題</div>
+            <div id="card-container">
+                <div id="card">
+                    <div class="card-content">
+                        <span id="word"></span>
+                    </div>
+                    <div class="card-hint">
+                        <span class="hint-left">← 完成</span>
+                        <span class="hint-right">跳過 →</span>
+                    </div>
+                </div>
+            </div>
+            <div class="instructions">左滑完成 / 右滑跳過</div>
+        </div>
+
+        <div id="result-screen" class="hidden">
+            <h1>遊戲結束!</h1>
+            <div id="result-list"></div>
+            <button id="restart-btn">再玩一次</button>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

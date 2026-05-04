@@ -1,11 +1,13 @@
-const wordBank = {
-    action: ["打噴嚏", "騎腳踏車", "煮飯", "游泳", "彈吉他", "拍照", "滑雪", "釣魚", "打籃球", "唱歌", "刷牙", "洗碗", "拖地", "澆花", "遛狗", "跳舞", "瑜伽", "衝浪"],
-    animal: ["大象", "恐龍", "企鵝", "長頸鹿", "鯊魚", "蝴蝶", "螃蟹", "貓頭鷹", "袋鼠", "河馬"],
-    food: ["披薩", "火鍋", "壽司", "珍珠奶茶", "漢堡", "冰淇淋", "拉麵", "鹹酥雞", "巧克力", "蛋糕"],
-    object: ["飛機", "潛水艇", "摩天輪", "雲霄飛車", "熱氣球", "吸塵器", "直升機", "望遠鏡", "滑板", "降落傘"],
-    place: ["太空站", "遊樂園", "圖書館", "海底世界", "火山", "沙漠", "北極", "金字塔", "城堡", "夜市"],
-    person: ["太空人", "鋼鐵人", "機器人", "忍者", "海盜", "超人", "魔術師", "消防員", "廚師", "偵探"]
+const categoryNameMap = {
+    action: "動作",
+    animal: "動物",
+    food: "食物",
+    object: "物品",
+    place: "地點",
+    person: "人物"
 };
+
+let fetchedWords = [];
 
 // Settings
 let settings = {
@@ -19,7 +21,6 @@ let settings = {
 let currentRound = 0;
 let results = [];
 let roundStartTime = null;
-let usedWords = [];
 let gameActive = false;
 let gameTimer = null;
 let timeRemaining = 0;
@@ -45,21 +46,21 @@ const timeSetting = document.getElementById("time-setting");
 const roundsValue = document.getElementById("rounds-value");
 const timeValue = document.getElementById("time-value");
 
-function getActiveWords() {
-    let words = [];
-    settings.categories.forEach(cat => {
-        if (wordBank[cat]) words = words.concat(wordBank[cat]);
+async function fetchWords(count, categories) {
+    const categoryNames = categories.map(c => categoryNameMap[c] || c);
+    const res = await fetch("/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ count, category: categoryNames })
     });
-    return words;
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    return data.words;
 }
 
 function getRandomWord() {
-    const allWords = getActiveWords();
-    const available = allWords.filter(w => !usedWords.includes(w));
-    if (available.length === 0) return "---";
-    const word = available[Math.floor(Math.random() * available.length)];
-    usedWords.push(word);
-    return word;
+    if (fetchedWords.length === 0) return "---";
+    return fetchedWords.shift();
 }
 
 function startRound() {
@@ -89,10 +90,27 @@ function endRound(status) {
     }
 }
 
-function startGame() {
+async function startGame() {
     currentRound = 0;
     results = [];
-    usedWords = [];
+    fetchedWords = [];
+
+    // Show loading state
+    startBtn.disabled = true;
+    startBtn.textContent = "載入中...";
+
+    try {
+        const count = settings.mode === "rounds" ? settings.rounds : 50;
+        fetchedWords = await fetchWords(count, settings.categories);
+    } catch (err) {
+        alert("無法取得詞語：" + err.message);
+        startBtn.disabled = false;
+        startBtn.textContent = "開始遊戲";
+        return;
+    }
+
+    startBtn.disabled = false;
+    startBtn.textContent = "開始遊戲";
 
     coverScreen.classList.add("hidden");
     gameScreen.classList.remove("hidden");

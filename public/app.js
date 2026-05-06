@@ -77,6 +77,7 @@ function startRound() {
     card.className = "";
     card.style.transform = "";
     card.style.opacity = "";
+    card.style.transition = "";
 }
 
 function endRound(status) {
@@ -278,6 +279,22 @@ function onPointerUp() {
 card.addEventListener("pointerdown", onPointerDown);
 document.addEventListener("pointermove", onPointerMove);
 document.addEventListener("pointerup", onPointerUp);
+
+// Keyboard support
+document.addEventListener("keydown", (e) => {
+    if (!gameActive) return;
+    if (e.key === "ArrowLeft") {
+        card.style.transition = "";
+        card.classList.add("animating");
+        card.classList.add("swipe-left");
+        setTimeout(() => endRound("completed"), 300);
+    } else if (e.key === "ArrowRight") {
+        card.style.transition = "";
+        card.classList.add("animating");
+        card.classList.add("swipe-right");
+        setTimeout(() => endRound("skipped"), 300);
+    }
+});
 
 // Button listeners
 startBtn.addEventListener("click", startGame);

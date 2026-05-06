@@ -27,7 +27,6 @@ let timeRemaining = 0;
 
 // DOM elements
 const coverScreen = document.getElementById("cover-screen");
-const settingsScreen = document.getElementById("settings-screen");
 const gameScreen = document.getElementById("game-screen");
 const resultScreen = document.getElementById("result-screen");
 const card = document.getElementById("card");
@@ -40,8 +39,6 @@ const resultList = document.getElementById("result-list");
 const wordEnglishEl = document.getElementById("word-english");
 const restartBtn = document.getElementById("restart-btn");
 const startBtn = document.getElementById("start-btn");
-const settingsBtn = document.getElementById("settings-btn");
-const settingsBackBtn = document.getElementById("settings-back-btn");
 const roundsSetting = document.getElementById("rounds-setting");
 const timeSetting = document.getElementById("time-setting");
 const roundsValue = document.getElementById("rounds-value");
@@ -182,16 +179,6 @@ function resetGame() {
     coverScreen.classList.remove("hidden");
 }
 
-// Settings
-function openSettings() {
-    coverScreen.classList.add("hidden");
-    settingsScreen.classList.remove("hidden");
-}
-
-function closeSettings() {
-    settingsScreen.classList.add("hidden");
-    coverScreen.classList.remove("hidden");
-}
 
 // Mode toggle
 document.querySelectorAll(".toggle-btn").forEach(btn => {
@@ -294,6 +281,4 @@ document.addEventListener("pointerup", onPointerUp);
 
 // Button listeners
 startBtn.addEventListener("click", startGame);
-settingsBtn.addEventListener("click", openSettings);
-settingsBackBtn.addEventListener("click", closeSettings);
 restartBtn.addEventListener("click", resetGame);

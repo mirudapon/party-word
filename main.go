@@ -23,9 +23,14 @@ type GenerateRequest struct {
 	Category []string `json:"category"`
 }
 
+type WordItem struct {
+	Word    string `json:"word"`
+	English string `json:"english"`
+}
+
 type GenerateResponse struct {
-	Words []string `json:"words"`
-	Error string   `json:"error,omitempty"`
+	Words []WordItem `json:"words"`
+	Error string     `json:"error,omitempty"`
 }
 
 func initCopilot() error {
@@ -76,7 +81,9 @@ func generateWordHandler(w http.ResponseWriter, r *http.Request) {
 
 	prompt := fmt.Sprintf(
 		"請生成 %d 個適合派對猜詞遊戲的繁體中文詞語，類別為：%s。"+
-			"只回傳 JSON 陣列格式，不要任何其他文字，例如：[\"詞語1\",\"詞語2\"]",
+			"每個詞語需要附上英文翻譯和詞性。"+
+			"只回傳 JSON 陣列格式，不要任何其他文字，例如："+
+			"[{\"word\":\"貓\",\"english\":\"n. cat\"},{\"word\":\"跑步\",\"english\":\"v. run\"}]",
 		req.Count, strings.Join(req.Category, "、"),
 	)
 
@@ -106,12 +113,29 @@ func generateWordHandler(w http.ResponseWriter, r *http.Request) {
 	<-done
 
 	reply := strings.Join(chunks, "")
+	// Strip markdown code fences if present
+	reply = strings.TrimSpace(reply)
+	if strings.HasPrefix(reply, "```") {
+		lines := strings.Split(reply, "\n")
+		// Remove first line (```json) and last line (```)
+		if len(lines) > 2 {
+			lines = lines[1 : len(lines)-1]
+		}
+		reply = strings.TrimSpace(strings.Join(lines, "\n"))
+	}
 
-	// Try to parse the reply as a JSON array of strings
-	var words []string
+	// Try to parse the reply as a JSON array of WordItem objects
+	var words []WordItem
 	if err := json.Unmarshal([]byte(reply), &words); err != nil {
-		// If parsing fails, return the raw reply as a single-element array
-		words = []string{reply}
+		// Fallback: try parsing as simple string array for backwards compatibility
+		var simpleWords []string
+		if err2 := json.Unmarshal([]byte(reply), &simpleWords); err2 != nil {
+			words = []WordItem{{Word: reply, English: ""}}
+		} else {
+			for _, w := range simpleWords {
+				words = append(words, WordItem{Word: w, English: ""})
+			}
+		}
 	}
 
 	writeJSON(w, http.StatusOK, GenerateResponse{Words: words})

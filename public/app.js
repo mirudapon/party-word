@@ -37,6 +37,7 @@ const totalDisplayEl = document.getElementById("total-display");
 const progressText = document.getElementById("progress-text");
 const timerDisplay = document.getElementById("timer-display");
 const resultList = document.getElementById("result-list");
+const wordEnglishEl = document.getElementById("word-english");
 const restartBtn = document.getElementById("restart-btn");
 const startBtn = document.getElementById("start-btn");
 const settingsBtn = document.getElementById("settings-btn");
@@ -55,18 +56,26 @@ async function fetchWords(count, categories) {
     });
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    return data.words;
+    // Normalize: ensure each item is { word, english }
+    return data.words.map(item => {
+        if (typeof item === "string") {
+            return { word: item, english: "" };
+        }
+        return { word: item.word || "", english: item.english || "" };
+    });
 }
 
 function getRandomWord() {
-    if (fetchedWords.length === 0) return "---";
+    if (fetchedWords.length === 0) return { word: "---", english: "" };
     return fetchedWords.shift();
 }
 
 function startRound() {
     currentRound++;
     currentRoundEl.textContent = currentRound;
-    wordEl.textContent = getRandomWord();
+    const item = getRandomWord();
+    wordEl.textContent = item.word;
+    wordEnglishEl.textContent = item.english;
     roundStartTime = Date.now();
     card.className = "";
     card.style.transform = "";
@@ -77,6 +86,7 @@ function endRound(status) {
     const timeSpent = ((Date.now() - roundStartTime) / 1000).toFixed(1);
     results.push({
         word: wordEl.textContent,
+        english: wordEnglishEl.textContent,
         time: timeSpent,
         status: status
     });
@@ -132,7 +142,7 @@ async function startGame() {
                 clearInterval(gameTimer);
                 // Record current card as skipped
                 const timeSpent = ((Date.now() - roundStartTime) / 1000).toFixed(1);
-                results.push({ word: wordEl.textContent, time: timeSpent, status: "skipped" });
+                results.push({ word: wordEl.textContent, english: wordEnglishEl.textContent, time: timeSpent, status: "skipped" });
                 showResults();
             }
         }, 1000);
@@ -158,7 +168,7 @@ function showResults() {
 
     resultList.innerHTML = results.map((r, i) => `
         <div class="result-item">
-            <span class="result-word">${i + 1}. ${r.word}</span>
+            <span class="result-word">${i + 1}. ${r.word}${r.english ? " / " + r.english : ""}</span>
             <div class="result-info">
                 <span class="result-time">${r.time}s</span>
                 <span class="result-status ${r.status}">${r.status === "completed" ? "完成" : "跳過"}</span>

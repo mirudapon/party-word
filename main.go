@@ -92,13 +92,14 @@ func generateWordHandler(w http.ResponseWriter, r *http.Request) {
 
 	var chunks []string
 	done := make(chan struct{})
+	var once sync.Once
 
 	session.On(func(event copilot.SessionEvent) {
 		switch d := event.Data.(type) {
 		case *copilot.AssistantMessageData:
 			chunks = append(chunks, d.Content)
 		case *copilot.SessionIdleData:
-			close(done)
+			once.Do(func() { close(done) })
 		}
 	})
 

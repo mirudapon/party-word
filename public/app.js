@@ -261,12 +261,14 @@ function onPointerUp() {
     const threshold = 100;
 
     if (currentX < -threshold) {
-        card.classList.add("animating");
-        card.classList.add("swipe-left");
+        card.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+        card.style.transform = "translateX(-150%) rotate(-20deg)";
+        card.style.opacity = "0";
         setTimeout(() => endRound("completed"), 300);
     } else if (currentX > threshold) {
-        card.classList.add("animating");
-        card.classList.add("swipe-right");
+        card.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+        card.style.transform = "translateX(150%) rotate(20deg)";
+        card.style.opacity = "0";
         setTimeout(() => endRound("skipped"), 300);
     } else {
         card.style.transition = "transform 0.3s ease, opacity 0.3s ease";

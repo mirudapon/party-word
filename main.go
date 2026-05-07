@@ -13,10 +13,13 @@ import (
 )
 
 var (
-	client  *copilot.Client
-	session *copilot.Session
-	mu      sync.Mutex
+	client   *copilot.Client
+	session  *copilot.Session
+	mu       sync.Mutex
+	history  []string // previously generated words
 )
+
+const maxHistory = 100
 
 type GenerateRequest struct {
 	Count    int      `json:"count"`
@@ -79,12 +82,18 @@ func generateWordHandler(w http.ResponseWriter, r *http.Request) {
 		req.Category = []string{"動作", "動物", "食物", "物品", "地點", "人物"}
 	}
 
+	excludeClause := ""
+	if len(history) > 0 {
+		excludeClause = fmt.Sprintf("不可使用以下已出現過的詞語：%s。", strings.Join(history, "、"))
+	}
+
 	prompt := fmt.Sprintf(
 		"請生成 %d 個適合派對猜詞遊戲的繁體中文詞語，類別為：%s。"+
 			"每個詞語需要附上英文翻譯和詞性。"+
+			"每個詞語必須不同，不可重複。%s"+
 			"只回傳 JSON 陣列格式，不要任何其他文字，例如："+
 			"[{\"word\":\"貓\",\"english\":\"n. cat\"},{\"word\":\"跑步\",\"english\":\"v. run\"}]",
-		req.Count, strings.Join(req.Category, "、"),
+		req.Count, strings.Join(req.Category, "、"), excludeClause,
 	)
 
 	mu.Lock()
@@ -139,7 +148,29 @@ func generateWordHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	writeJSON(w, http.StatusOK, GenerateResponse{Words: words})
+	// Deduplicate words (also skip words already in history)
+	historySet := make(map[string]bool, len(history))
+	for _, h := range history {
+		historySet[h] = true
+	}
+	seen := make(map[string]bool)
+	var unique []WordItem
+	for _, w := range words {
+		if !seen[w.Word] && !historySet[w.Word] {
+			seen[w.Word] = true
+			unique = append(unique, w)
+		}
+	}
+
+	// Add new words to history, keep at most maxHistory
+	for _, w := range unique {
+		history = append(history, w.Word)
+	}
+	if len(history) > maxHistory {
+		history = history[len(history)-maxHistory:]
+	}
+
+	writeJSON(w, http.StatusOK, GenerateResponse{Words: unique})
 }
 
 func writeJSON(w http.ResponseWriter, status int, data interface{}) {
